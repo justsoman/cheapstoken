@@ -16,7 +16,7 @@ function rewritePath(pathname: string): string {
 export const onRequest = async (context: ApiContext): Promise<Response> => {
   const { request, env } = context;
   const url = new URL(request.url);
-  const path = rewritePath(url.pathname);
+  const path = url.pathname;
   const target = new URL(path + url.search, env.API_ORIGIN);
   console.log(target.toString());
   return fetch(target.toString(), request);
