@@ -6,6 +6,7 @@ interface Env {
   export const onRequest: PagesFunction<Env> = async (context) => {
     const { request, env } = context;
     const url = new URL(request.url);
-    const target = new URL(url.pathname + url.search, "https://api.cheapstoken.ai");
+    const target = new URL(url.pathname + url.search,env.API_ORIGIN);
+    console.log(target.toString());
     return fetch(target.toString(), request);
   };
