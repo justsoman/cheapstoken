@@ -43,3 +43,33 @@ npx wrangler pages dev . --compatibility-date=2024-01-01
 ## 与前端的关系
 
 前端若请求 **`/api/v1/...`** 等同源路径，则会由上述 Function 处理并转发到配置的后端 origin。请确保生产环境的 API 基路径与这里代理规则一致。
+
+## 自定义域名与 DNS（指向 Pages）
+
+### 推荐：在 Pages 里绑定域名（优先）
+
+1. 打开 Cloudflare Dashboard → **Workers & Pages** → 选中你的 **Pages 项目**。  
+2. 进入 **自定义域名 / Custom domains** → **设置自定义域名 / Set up a custom domain**（或 **添加**）。  
+3. 输入要使用的域名，例如 `www.example.com` 或 `example.com`，按提示完成验证。  
+4. 若该域名 **已在当前 Cloudflare 账号下托管 DNS**，多数情况下 Cloudflare 会 **自动创建或更新 DNS 记录**，无需再手抄。
+
+绑定成功后，访问会指向该 Pages 部署；HTTPS 证书一般由 Cloudflare 自动签发。在自定义域名列表中可查看是否已为 **Active** 状态。
+
+### 需要手动添加 DNS 记录时
+
+在 **该域名的 DNS**（选择站点 → **DNS** → **记录**）中新增或核对：
+
+| 记录类型 | 名称 | 目标 | 代理 |
+|---------|------|------|------|
+| **CNAME** | 子域前缀（如 `www`、`app`） | `你的项目名.pages.dev`（以 Pages 项目概览或自定义域名页显示为准） | **已代理**（橙色云）通常为推荐选项 |
+
+- **子域名**（如 `www`）：使用 **CNAME** 指向 **`项目名.pages.dev`**。  
+- **根域名**（`@` / 裸域）：在 Cloudflare 上一般也可对根域配置 **CNAME** 到 **`项目名.pages.dev`**（通过 **CNAME 展平**）；具体以控制台在添加自定义域名时给出的记录类型与目标为准。
+
+已在 Pages 中成功绑定某主机名时，请勿再为同一主机名随意指向其它 IP 或冲突记录，以免解析异常。
+
+### 注意
+
+- **域名与 Pages 项目在同一 Cloudflare 账号**时，用「自定义域名」向导最省事。  
+- DNS 变更后全球生效可能需要 **数分钟至数小时**；以 Pages 自定义域名状态与 DNS 传播为准。  
+- 若仅使用第三方 DNS、不走 Cloudflare 代理，步骤会不同；Pages 自定义域名通常与 **Cloudflare 代理（橙色云）** 搭配使用。
