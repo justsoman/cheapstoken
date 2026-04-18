@@ -1,0 +1,1 @@
+const r="table-page-size";function a(e=20){try{const s=localStorage.getItem(r);if(s){const t=Number(s);if(Number.isFinite(t)&&t>0)return t}}catch{}return e}function i(e){try{localStorage.setItem(r,String(e))}catch{}}export{a as g,i as s};
